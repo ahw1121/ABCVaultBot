@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+config.yaml
+*.log
+tmp_*.html
+tmp_*.js
+.pytest_cache/
+.mypy_cache/
