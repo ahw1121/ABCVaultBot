@@ -9,6 +9,8 @@ from abcvaultbot.config import NotificationConfig
 
 logger = logging.getLogger(__name__)
 
+DISCORD_CONTENT_LIMIT = 2000
+
 
 @dataclass
 class Notifier:
@@ -19,10 +21,8 @@ class Notifier:
             print(f"\n=== {title} ===\n{message}\n")
         if self.config.desktop:
             self._desktop(title, message)
-        if self.config.telegram.enabled:
-            self._telegram(f"{title}\n{message}")
-        if self.config.webhook.enabled:
-            self._webhook(title, message)
+        if self.config.discord.enabled:
+            self._discord(title, message)
 
     def _desktop(self, title: str, message: str) -> None:
         try:
@@ -34,32 +34,25 @@ class Notifier:
         except Exception as exc:
             logger.warning("desktop notification failed: %s", exc)
 
-    def _telegram(self, text: str) -> None:
-        token = self.config.telegram.bot_token
-        chat_id = self.config.telegram.chat_id
-        if not token or not chat_id:
-            logger.warning("telegram enabled but bot_token or chat_id is missing")
-            return
-        url = f"https://api.telegram.org/bot{token}/sendMessage"
-        try:
-            requests.post(
-                url,
-                json={"chat_id": chat_id, "text": text},
-                timeout=15,
-            )
-        except requests.RequestException as exc:
-            logger.warning("telegram notification failed: %s", exc)
-
-    def _webhook(self, title: str, message: str) -> None:
-        url = self.config.webhook.url
+    def _discord(self, title: str, message: str) -> None:
+        url = self.config.discord.webhook_url.strip()
         if not url:
-            logger.warning("webhook enabled but url is missing")
+            logger.warning("discord enabled but webhook_url is missing")
             return
+        body_text = f"**{title}**\n\n{message}"
+        if len(body_text) > DISCORD_CONTENT_LIMIT:
+            body_text = body_text[: DISCORD_CONTENT_LIMIT - 3] + "..."
+        payload = {
+            "content": body_text,
+            "allowed_mentions": {"parse": []},
+        }
         try:
-            requests.post(
-                url,
-                json={"title": title, "message": message},
-                timeout=15,
-            )
+            response = requests.post(url, json=payload, timeout=15)
+            if response.status_code >= 400:
+                logger.warning(
+                    "discord notification failed: HTTP %s %s",
+                    response.status_code,
+                    response.text[:200],
+                )
         except requests.RequestException as exc:
-            logger.warning("webhook notification failed: %s", exc)
+            logger.warning("discord notification failed: %s", exc)

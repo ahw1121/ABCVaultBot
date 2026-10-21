@@ -1,62 +1,48 @@
 # ABC Vault Bot
 
-Python monitor for [The ABC Vault](https://theabcvault.com) that refreshes the shop, watches for bottles whose titles match your keywords, checks live inventory, and optionally adds the first match to your cart—then notifies you.
+Python monitor for [The ABC Vault](https://theabcvault.com) that watches for bottles matching your keywords, checks inventory, optionally adds to cart, and notifies you (including **Discord** on phone and desktop).
 
-Inspired by the commercial [ABC BourBot](https://abcbourbot.com/) flow (Vault key → login → keyword list → inventory → cart), but self-hosted and configurable in YAML.
+Inspired by [ABC BourBot](https://abcbourbot.com/), but self-hosted and configurable in YAML.
+
+## Quick start (Windows)
+
+**New to this?** Follow **[SETUP.md](SETUP.md)** — step-by-step with screenshots-level detail.
+
+1. Install Python 3.10+ ([python.org](https://www.python.org/downloads/), check **Add to PATH**)
+2. Double-click **`setup.bat`**
+3. Edit **`config.yaml`** (ABC login, Vault key, keywords, Discord webhook)
+4. On Vault day, double-click **`run.bat`**
 
 ## Important
 
-- The Vault is invitation-only. You need a valid **Vault Key** from ABC's email and an ABC online account.
-- ABC's FAQ warns that automated access can lead to cancelled orders or bans. Use at your own risk; this tool is for personal use only.
-- After add-to-cart, you have about **4 minutes** to finish checkout.
+- Invitation-only: you need a **Vault Key** from ABC’s email and an ABC online account.
+- Automated access may violate ABC policy — personal use at your own risk.
+- After add-to-cart, checkout within about **4 minutes**.
 
-## Setup
+## Run from terminal (optional)
 
 ```bash
-cd ABCVaultBot
-python -m venv .venv
 .venv\Scripts\activate
-pip install -r requirements.txt
-copy config.example.yaml config.yaml
-```
-
-Edit `config.yaml`:
-
-- `vault.email` / `vault.password` — same as abcfws.com / The Vault
-- `vault.vault_key` — code from your Vault invitation email
-- `monitor.keywords` — substrings to match in product titles (case-insensitive, any match)
-- `monitor.poll_interval_seconds` — how often to refresh (adds random jitter)
-
-Optional notifications: console (default), Windows desktop (`pip install win10toast`), Telegram, or webhook.
-
-## Run
-
-```bash
 python -m abcvaultbot -c config.yaml
+python -m abcvaultbot -c config.yaml -v   # verbose
 ```
 
-Verbose logging:
+## Notifications
 
-```bash
-python -m abcvaultbot -c config.yaml -v
-```
+- **console** — messages in the run window
+- **desktop** — Windows toast (`pip install win10toast`, set `desktop: true`)
+- **discord** — channel webhook; enable push notifications in the Discord app
 
 ## How it works
 
-1. **Vault Key** — `GET https://abc.irishtitan.cloud/api/vault/vault-key/check` with `Vault-Key` header (same middleware the site theme uses).
-2. **Login** — POST to `login.php?action=check_login` with your ABC credentials.
-3. **Shop poll** — Fetches `/shop/`, parses product cards (`data-product-id`, `data-product-sku`, title).
-4. **Inventory** — `GET .../api/vault/inventory-check?sku:in=...` for keyword matches only.
-5. **Cart** — BigCommerce Storefront API `POST /api/storefront/carts` plus ABC `POST .../api/vault/cart-reserve` (mirrors the site's Buy Now flow).
-
-## Future: Gmail Vault Key
-
-A planned enhancement is OAuth/Gmail parsing to read the invitation email and extract the Vault Key automatically. For now, paste the key into `config.yaml` when you receive an invite.
+1. Validate Vault key (ABC middleware API)
+2. Log in to The Vault
+3. Poll `/shop/`, match keywords in product titles
+4. Check inventory for matches
+5. Add to cart via BigCommerce + ABC cart-reserve APIs
 
 ## Tests
 
 ```bash
 python -m unittest discover -s tests
 ```
-
-Uses `tmp_shop.html` if present (downloaded during development); parser tests skip otherwise.

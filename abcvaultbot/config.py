@@ -28,24 +28,16 @@ class MonitorConfig:
 
 
 @dataclass
-class TelegramConfig:
+class DiscordConfig:
     enabled: bool = False
-    bot_token: str = ""
-    chat_id: str = ""
-
-
-@dataclass
-class WebhookConfig:
-    enabled: bool = False
-    url: str = ""
+    webhook_url: str = ""
 
 
 @dataclass
 class NotificationConfig:
     console: bool = True
     desktop: bool = False
-    telegram: TelegramConfig = field(default_factory=TelegramConfig)
-    webhook: WebhookConfig = field(default_factory=WebhookConfig)
+    discord: DiscordConfig = field(default_factory=DiscordConfig)
 
 
 @dataclass
@@ -67,8 +59,7 @@ def load_config(path: Path | str) -> AppConfig:
     vault_raw = _section(raw, "vault")
     monitor_raw = _section(raw, "monitor")
     notif_raw = _section(raw, "notifications")
-    telegram_raw = _section(notif_raw, "telegram")
-    webhook_raw = _section(notif_raw, "webhook")
+    discord_raw = _section(notif_raw, "discord")
 
     keywords = monitor_raw.get("keywords") or []
     if not isinstance(keywords, list):
@@ -108,14 +99,9 @@ def load_config(path: Path | str) -> AppConfig:
         notifications=NotificationConfig(
             console=bool(notif_raw.get("console", True)),
             desktop=bool(notif_raw.get("desktop", False)),
-            telegram=TelegramConfig(
-                enabled=bool(telegram_raw.get("enabled", False)),
-                bot_token=str(telegram_raw.get("bot_token", "")),
-                chat_id=str(telegram_raw.get("chat_id", "")),
-            ),
-            webhook=WebhookConfig(
-                enabled=bool(webhook_raw.get("enabled", False)),
-                url=str(webhook_raw.get("url", "")),
+            discord=DiscordConfig(
+                enabled=bool(discord_raw.get("enabled", False)),
+                webhook_url=str(discord_raw.get("webhook_url", "")),
             ),
         ),
     )
