@@ -1,6 +1,8 @@
-# ABC Vault Bot — Easy setup guide
+# ABC Vault Bot — Windows setup guide
 
-This guide assumes **Windows** and little command-line experience. You need a **Vault invitation** from ABC (email with a **Vault Key**) and an **ABC online account** (same login as [abcfws.com](https://abcfws.com)).
+This guide is for **Windows**. **Mac users:** see **[SETUP-MAC.md](SETUP-MAC.md)**.
+
+You need a **Vault invitation** from ABC (email with a **Vault Key**) and an **ABC online account** (same login as [abcfws.com](https://abcfws.com)).
 
 ---
 
@@ -89,13 +91,14 @@ When a bottle is added to your cart, you have about **4 minutes** to finish chec
 
 ## Optional: Windows popup on this PC
 
-In `config.yaml`, set `notifications.desktop: true`, then in a terminal (after `setup.bat`):
+In `config.yaml`, set `notifications.desktop: true`, then after `setup.bat`:
 
 ```text
+.venv\Scripts\activate
 pip install win10toast
 ```
 
-(Or run `setup.bat` again after adding win10toast to requirements if we add it — for now user runs pip manually; I could add win10toast to requirements as optional - README says pip install. I'll add to SETUP only)
+On Mac, `desktop: true` uses built-in Notification Center (see **SETUP-MAC.md**).
 
 ---
 
@@ -113,7 +116,7 @@ pip install win10toast
 
 ## Sharing with a friend
 
-Send them the project folder **without** your `config.yaml`. They run **`setup.bat`**, create their own **`config.yaml`**, and use their own ABC account and Vault key.
+Send them the project folder **without** your `config.yaml`. On Windows: **`setup.bat`** / **`run.bat`**. On Mac: **`setup.sh`** / **`run.sh`** (see **SETUP-MAC.md**).
 
 ---
 

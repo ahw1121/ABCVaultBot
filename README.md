@@ -4,14 +4,16 @@ Python monitor for [The ABC Vault](https://theabcvault.com) that watches for bot
 
 Inspired by [ABC BourBot](https://abcbourbot.com/), but self-hosted and configurable in YAML.
 
-## Quick start (Windows)
+## Quick start
 
-**New to this?** Follow **[SETUP.md](SETUP.md)** — step-by-step with screenshots-level detail.
+| Platform | Setup guide | Run |
+|----------|-------------|-----|
+| **Windows** | [SETUP.md](SETUP.md) | Double-click **`setup.bat`**, then **`run.bat`** |
+| **Mac** | [SETUP-MAC.md](SETUP-MAC.md) | `./setup.sh`, then `./run.sh` |
 
-1. Install Python 3.10+ ([python.org](https://www.python.org/downloads/), check **Add to PATH**)
-2. Double-click **`setup.bat`**
-3. Edit **`config.yaml`** (ABC login, Vault key, keywords, Discord webhook)
-4. On Vault day, double-click **`run.bat`**
+1. Install Python 3.10+
+2. Run setup once, edit **`config.yaml`** (ABC login, Vault key, keywords, Discord webhook)
+3. On Vault day, run the bot and keep the computer awake
 
 ## Important
 
@@ -21,17 +23,27 @@ Inspired by [ABC BourBot](https://abcbourbot.com/), but self-hosted and configur
 
 ## Run from terminal (optional)
 
+**Windows**
+
 ```bash
 .venv\Scripts\activate
 python -m abcvaultbot -c config.yaml
-python -m abcvaultbot -c config.yaml -v   # verbose
 ```
+
+**Mac / Linux**
+
+```bash
+source .venv/bin/activate
+python -m abcvaultbot -c config.yaml
+```
+
+Add `-v` for verbose logging.
 
 ## Notifications
 
-- **console** — messages in the run window
-- **desktop** — Windows toast (`pip install win10toast`, set `desktop: true`)
-- **discord** — channel webhook; enable push notifications in the Discord app
+- **console** — messages in the terminal window
+- **desktop** — Windows toast (`pip install win10toast`) or macOS Notification Center (`desktop: true`)
+- **discord** — channel webhook; enable push in the Discord app
 
 ## How it works
 

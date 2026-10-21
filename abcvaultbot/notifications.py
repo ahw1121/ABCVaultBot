@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import logging
+import platform
+import subprocess
+import sys
 from dataclasses import dataclass
 
 import requests
@@ -25,6 +28,29 @@ class Notifier:
             self._discord(title, message)
 
     def _desktop(self, title: str, message: str) -> None:
+        if sys.platform == "darwin":
+            self._desktop_macos(title, message)
+        elif platform.system() == "Windows":
+            self._desktop_windows(title, message)
+        else:
+            logger.debug("desktop notifications not configured for this OS")
+
+    def _desktop_macos(self, title: str, message: str) -> None:
+        safe_title = title.replace('"', '\\"')
+        safe_message = message.replace('"', '\\"').replace("\n", " ")
+        script = (
+            f'display notification "{safe_message}" with title "{safe_title}"'
+        )
+        try:
+            subprocess.run(
+                ["osascript", "-e", script],
+                check=False,
+                capture_output=True,
+            )
+        except OSError as exc:
+            logger.warning("macOS notification failed: %s", exc)
+
+    def _desktop_windows(self, title: str, message: str) -> None:
         try:
             from win10toast import ToastNotifier  # type: ignore[import-untyped]
 

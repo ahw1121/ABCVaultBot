@@ -19,7 +19,7 @@ monitor:
 
 notifications:
   console: true
-  # Windows popup on this PC (optional: pip install win10toast)
+  # Desktop alert: Windows (pip install win10toast) or Mac (built-in)
   desktop: false
   discord:
     enabled: true
